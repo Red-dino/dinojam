@@ -12,7 +12,15 @@ local discs = {}
 
 local tracks = {}
 local visuals = {}
-local programs = {{"wave", ""}, {"cord wave", ""}, {"dots", ""}}
+local programs = {
+    {"wave", ""},
+    {"cord wave", ""},
+    {"dots", ""},
+    {"time-space rain", ""},
+    {"flower", ""},
+    {"time fossils", ""},
+    {"rings", ""}
+}
 local tracks_index = 1
 local file_menu_index = 1
 
@@ -351,6 +359,14 @@ function handleClick()
             current_program = program_cord_wave
         elseif program_name == "dots" then
             current_program = program_dots
+        elseif program_name == "time-space rain" then
+            current_program = program_time_space_rain
+        elseif program_name == "flower" then
+            current_program = program_flower
+        elseif program_name == "time fossils" then
+            current_program = program_time_fossils
+        elseif program_name == "rings" then
+            current_program = program_rings
         end
 
         background = love.graphics.newCanvas(640, 480)
@@ -376,6 +392,8 @@ function love.draw()
         love.graphics.draw(background, background_x, background_y)
         return
     end
+
+    love.graphics.setColor(255, 255, 255)
 
     if latest_print then
         love.graphics.print(latest_print)
@@ -711,6 +729,13 @@ end
 -- separate files
 
 --== PROGRAMS ==--
+local function _hsv(h)
+    local r = 0.5 + 0.5 * math.sin(h)
+    local g = 0.5 + 0.5 * math.sin(h + 2.094)
+    local b = 0.5 + 0.5 * math.sin(h + 4.188)
+    return r, g, b
+end
+
 function program_wave()
     love.graphics.clear()
     for i=0,31 do
@@ -730,5 +755,61 @@ function program_dots()
     if math.floor(love.timer.getTime() * 20) % 20 == 1 then
         love.graphics.circle("fill", love.math.random(20, 620), love.math.random(20, 460), 20)
     end
+end
+
+function program_time_space_rain()
+    local t = love.timer.getTime()
+    for i = 0, 400 do
+        local p = t * 20 + i
+
+        local x = (p * 37) % 640
+        local y = (p * p * 0.1) % 480
+
+        love.graphics.points(x, y)
+    end
+end
+
+function program_flower() 
+    local t = love.timer.getTime()
+    for i = 0, 99 do
+        local a = i * 0.0628
+
+        local r1 = 180 + 40 * math.sin(t)
+        local r2 = 180 + 40 * math.sin(t * 1.618)
+
+        local x1 = 320 + r1 * math.cos(a + t * 0.2)
+        local y1 = 240 + r1 * math.sin(a + t * 0.2)
+
+        local x2 = 320 + r2 * math.cos(a * 7 - t * 0.3)
+        local y2 = 240 + r2 * math.sin(a * 7 - t * 0.3)
+
+        love.graphics.line(x1, y1, x2, y2)
+    end
+end
+
+function program_time_fossils()
+    local t = love.timer.getTime()
+    local x = 320 + 250 * math.sin(t * 0.13) * math.sin(t * 2.7)
+
+    local y = 240 + 200 * math.cos(t * 0.17) * math.sin(t * 3.1)
+
+    local r = 1 + 8 * (0.5 + 0.5 * math.sin(t * 5))
+
+    love.graphics.circle("fill", x, y, r)
+end
+
+function program_rings()
+    local t = love.timer.getTime()
+    local x = 320 + 120 * math.sin(t * 0.21)
+    local y = 240 + 80  * math.cos(t * 0.17)
+
+    local r = 20 + 200 * (
+        0.5 + 0.5 * math.sin(t * 1.13)
+    )
+
+    local cr, cg, cb = _hsv(t * 0.1)
+
+    love.graphics.setColor(cr, cg, cb)
+    love.graphics.circle("line", x, y, r)
 end
 
