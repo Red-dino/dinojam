@@ -12,6 +12,7 @@ local discs = {}
 
 local tracks = {}
 local visuals = {}
+local programs = {{"wave", ""}, {"cord wave", ""}, {"dots", ""}}
 local tracks_index = 1
 local file_menu_index = 1
 
@@ -29,6 +30,8 @@ local background = nil
 local background_x = 0
 local background_y = 0
 local background_type = nil
+local current_program = nil
+local program_canvas = nil
 
 local action_x = 1
 local action_y = 6
@@ -95,7 +98,7 @@ function love.update(dt)
 
         if inFiles() then
             tracks_index = 1
-            file_menu_index = ((file_menu_index - 2) % 2) + 1
+            file_menu_index = ((file_menu_index - 2) % 3) + 1
         end
 
         action_x = action_x - 1
@@ -114,7 +117,7 @@ function love.update(dt)
 
         if inFiles() then
             tracks_index = 1
-            file_menu_index = ((file_menu_index) % 2) + 1
+            file_menu_index = ((file_menu_index) % 3) + 1
         end
 
         action_x = action_x + 1
@@ -315,6 +318,8 @@ function handleClick()
             background:release()
         end
 
+        current_program = nil
+
         local file = visuals[tracks_index]
         local path = "visuals/"..file[1]
         if file[2] == "ogv" then
@@ -331,10 +336,38 @@ function handleClick()
         end
         background_x = 320 - (background:getWidth() / 2)
         background_y = 240 - (background:getHeight() / 2)
+    elseif action == "files" and file_menu_index == 3 then
+        if background then
+            background:release()
+        end
+
+        current_program = nil
+
+        local program_name = programs[tracks_index][1]
+
+        if program_name == "wave" then
+            current_program = program_wave
+        elseif program_name == "cord wave" then
+            current_program = program_cord_wave
+        elseif program_name == "dots" then
+            current_program = program_dots
+        end
+
+        background = love.graphics.newCanvas(640, 480)
+        background_type = "Program"
+        background_x = 0
+        background_y = 0
     end
 end
 
 function love.draw()
+
+    if current_program then
+        love.graphics.setCanvas(background)
+        current_program()
+        love.graphics.setCanvas()
+    end
+
     if background and visual_setting == "under" then
         love.graphics.draw(background, background_x, background_y)
     end
@@ -367,10 +400,12 @@ function love.draw()
 
     y = y + 30
 
-    if file_menu_index == 2 then
-        love.graphics.print("  Tracks  [ Visuals ]", 5, y)
+    if file_menu_index == 3 then
+        love.graphics.print("  Tracks    Visuals  [ Programs ]", 5, y)
+    elseif file_menu_index == 2 then
+        love.graphics.print("  Tracks  [ Visuals ]  Programs", 5, y)
     else
-        love.graphics.print("[ Tracks ]  Visuals", 5, y)
+        love.graphics.print("[ Tracks ]  Visuals    Programs", 5, y)
     end
 
     local list = getFileList()
@@ -571,7 +606,9 @@ function inFiles()
 end
 
 function getFileList()
-    if file_menu_index == 2 then
+    if file_menu_index == 3 then
+        return programs
+    elseif file_menu_index == 2 then
         return visuals
     else
         return tracks
@@ -672,4 +709,26 @@ end
 -- return to normal BPM button
 -- individual volume controls
 -- separate files
+
+--== PROGRAMS ==--
+function program_wave()
+    love.graphics.clear()
+    for i=0,31 do
+        love.graphics.rectangle("fill", 20 * i, 230 + 20 * math.sin(i + 20 * love.timer.getTime()), 20, 40)
+    end
+end
+
+
+function program_cord_wave()
+    love.graphics.clear()
+    for i=0,31 do
+        love.graphics.rectangle("fill", 20 * i, 230 + 40 * math.sin((i - 16) * love.timer.getTime()), 20, 20)
+    end
+end
+
+function program_dots()
+    if math.floor(love.timer.getTime() * 20) % 20 == 1 then
+        love.graphics.circle("fill", love.math.random(20, 620), love.math.random(20, 460), 20)
+    end
+end
 
