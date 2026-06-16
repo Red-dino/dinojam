@@ -400,8 +400,8 @@ end
 function getTrack(filename, filepath)
     local source = love.audio.newSource(filepath, "stream")
     local name = filename
-    if string.len(name) > 33 then
-        name = "..."..name:sub(string.len(name) - 35, string.len(name))
+    if string.len(name) > 45 then
+        name = "..."..name:sub(string.len(name) - 44, string.len(name))
     end
     return {
         name = name,
