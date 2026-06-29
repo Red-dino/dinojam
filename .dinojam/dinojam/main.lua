@@ -19,7 +19,8 @@ local programs = {
     {"time-space rain", ""},
     {"flower", ""},
     {"time fossils", ""},
-    {"rings", ""}
+    {"rings", ""},
+    {"square", ""}
 }
 local tracks_index = 1
 local file_menu_index = 1
@@ -367,6 +368,8 @@ function handleClick()
             current_program = program_time_fossils
         elseif program_name == "rings" then
             current_program = program_rings
+        elseif program_name == "square" then
+            current_program = program_square
         end
 
         background = love.graphics.newCanvas(640, 480)
@@ -811,5 +814,19 @@ function program_rings()
 
     love.graphics.setColor(cr, cg, cb)
     love.graphics.circle("line", x, y, r)
+end
+
+
+function program_square()
+    local t = love.timer.getTime()
+
+    love.graphics.clear()
+    love.graphics.setLineWidth(5)
+    for i=0,16 do
+        local cr, cg, cb = _hsv(i + (t) / 2)
+        love.graphics.setColor(cr, cg, cb)
+        love.graphics.rectangle("line", 320 - i * 20 + 15 * (15 - i) * math.sin(t), 240 - i * 20 + 15 * (15 - i) * math.cos(t), i * 40, i * 40)
+    end
+    love.graphics.setLineWidth(1)
 end
 
