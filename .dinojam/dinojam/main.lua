@@ -43,15 +43,24 @@ local current_program = nil
 local program_canvas = nil
 
 local action_x = 1
-local action_y = 6
+local action_y = 8
 local actions = {
     {"tap", "test"},
     {"slower", "faster", "sync"},
     {"back", "forward", "play", "playsync", "stop"},
+    {"lpf"},
+    {"hpf"},
     -- {"volume_down", "volume_up"},
     {"volume"},
     {"none", "under", "over"},
     {"files"}
+}
+
+local default_filter = {
+    type = "bandpass",
+    volume = 1.0,
+    highgain = 1.0,
+    lowgain = 1.0
 }
 
 -- function love.gamepadpressed(joystick, button)
@@ -103,6 +112,16 @@ function love.update(dt)
         if getCurrentAction() == "volume" then
             volume_bias = math.max(0, volume_bias - 0.05)
             updateVolumes()
+        elseif getCurrentAction() == "lpf" then
+            local track = getCurrentTrack().track
+            local filter = track:getFilter()
+            filter.lowgain = math.max(0, filter.lowgain - 0.1)
+            track:setFilter(filter)
+        elseif getCurrentAction() == "hpf" then
+            local track = getCurrentTrack().track
+            local filter = track:getFilter()
+            filter.highgain = math.max(0, filter.highgain - 0.1)
+            track:setFilter(filter)
         end
 
         if inFiles() then
@@ -122,6 +141,16 @@ function love.update(dt)
         if getCurrentAction() == "volume" then
             volume_bias = math.min(1, volume_bias + 0.05)
             updateVolumes()
+        elseif getCurrentAction() == "lpf" then
+            local track = getCurrentTrack().track
+            local filter = track:getFilter()
+            filter.lowgain = math.min(1.0, filter.lowgain + 0.1)
+            track:setFilter(filter)
+        elseif getCurrentAction() == "hpf" then
+            local track = getCurrentTrack().track
+            local filter = track:getFilter()
+            filter.highgain = math.min(1.0, filter.highgain + 0.1)
+            track:setFilter(filter)
         end
 
         if inFiles() then
@@ -177,7 +206,7 @@ function love.update(dt)
 
         if not getCurrentTrack() then
             action_x = 1
-            action_y = 6
+            action_y = 7
         end
     elseif isKeyDown("e", "rightshoulder") then
         time_since_last_input = 0
@@ -187,7 +216,7 @@ function love.update(dt)
 
         if not getCurrentTrack() then
             action_x = 1
-            action_y = 6
+            action_y = 8
         end
     elseif isKeyDown("space", "a") then
         time_since_last_input = 0
@@ -199,7 +228,7 @@ function love.update(dt)
         visual_setting = "under"
         tracks_index = 1
         action_x = 2
-        action_y = 5
+        action_y = 7
     elseif isKeyDown("w", "x") then
         time_since_last_input = 0
         
@@ -213,7 +242,7 @@ function love.update(dt)
         
         tracks_index = 1
         action_x = 1
-        action_y = 6
+        action_y = 8
     elseif isGamepadDown("guide") then
         love.event.quit()
         return
@@ -296,6 +325,16 @@ function handleClick()
         t.track:setPitch(t.track:getPitch() * 1.01)
     elseif action == "sync" then
         syncTracks()
+    elseif action == "lpf" then
+        local track = getCurrentTrack().track
+        local filter = track:getFilter()
+        filter.lowgain = 1.0 - filter.lowgain
+        track:setFilter(filter)
+    elseif action == "hpf" then
+        local track = getCurrentTrack().track
+        local filter = track:getFilter()
+        filter.highgain = 1.0 - filter.highgain
+        track:setFilter(filter)
     elseif action == "volume" then
         volume_bias = 1 - volume_bias
         updateVolumes()
@@ -455,6 +494,7 @@ end
 
 function getTrack(filename, filepath)
     local source = love.audio.newSource(filepath, "stream")
+    source:setFilter(default_filter)
     local name = filename
     if string.len(name) > 45 then
         name = "..."..name:sub(string.len(name) - 44, string.len(name))
@@ -496,15 +536,15 @@ function drawTrack(track, x, y, selected)
         love.graphics.draw(discs[track.bar % 4], x + 5, y + 25)
 
         bpm = bpm * track.track:getPitch()
-        love.graphics.print(string.format("BPM %.2f", bpm), x + 127, y + 27)
+        love.graphics.print(string.format("BPM %.2f", bpm), x + 130, y + 27)
     else
         love.graphics.draw(discs[0], x + 5, y + 25)
-        love.graphics.print(string.format("BPM ??", bpm), x + 127, y + 27)
+        love.graphics.print(string.format("BPM ??", bpm), x + 130, y + 27)
     end
 
     local selection = getCurrentAction()
     drawButton("Tap", x + 65, y + 25, 26, 20, selected and selection == "tap")
-    drawButton("Test", x + 96, y + 25, 26, 20, selected and selection == "test")
+    drawButton("Test", x + 96, y + 25, 29, 20, selected and selection == "test")
 
     drawButton("-", x + 65, y + 50, 20, 20, selected and selection == "slower")
     drawButton("+", x + 90, y + 50, 20, 20, selected and selection == "faster")
@@ -525,6 +565,19 @@ function drawTrack(track, x, y, selected)
 
     local newDuration = track.track:getDuration() / track.track:getPitch()
     love.graphics.print(formatTime(newDuration * percent).." / "..formatTime(newDuration), x + 5, y + 135)
+
+    love.graphics.print("Low Gain", x + 9, y + 155)
+    love.graphics.rectangle(getCurrentAction() == "lpf" and "fill" or "line", x + 70, y + 160, width - 70, 6)
+    local x_diff = (width - 70) * track.track:getFilter().lowgain + 70
+    love.graphics.rectangle("fill", x + x_diff, y + 155, 6, 16)
+
+    love.graphics.print("High Gain", x + 5, y + 180)
+    love.graphics.rectangle(getCurrentAction() == "hpf" and "fill" or "line", x + 70, y + 185, width - 70, 6)
+    local x_diff = (width - 70) * track.track:getFilter().highgain + 70
+    love.graphics.rectangle("fill", x + x_diff, y + 180, 6, 16)
+
+    --local x = 160 + (320 * volume_bias) - 3
+    --love.graphics.rectangle("fill", x, y + 2, 6, 16)
 end
 
 function formatTime(t)
@@ -623,7 +676,7 @@ function isGamepadDown(gamepad_key)
 end
 
 function inFiles()
-    return action_y == 6
+    return action_y == 8
 end
 
 function getFileList()
