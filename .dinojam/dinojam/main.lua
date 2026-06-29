@@ -567,12 +567,12 @@ function drawTrack(track, x, y, selected)
     love.graphics.print(formatTime(newDuration * percent).." / "..formatTime(newDuration), x + 5, y + 135)
 
     love.graphics.print("Low Gain", x + 9, y + 155)
-    love.graphics.rectangle(getCurrentAction() == "lpf" and "fill" or "line", x + 70, y + 160, width - 70, 6)
+    love.graphics.rectangle(getCurrentAction() == "lpf" and selected and "fill" or "line", x + 70, y + 160, width - 70, 6)
     local x_diff = (width - 70) * track.track:getFilter().lowgain + 70
     love.graphics.rectangle("fill", x + x_diff, y + 155, 6, 16)
 
     love.graphics.print("High Gain", x + 5, y + 180)
-    love.graphics.rectangle(getCurrentAction() == "hpf" and "fill" or "line", x + 70, y + 185, width - 70, 6)
+    love.graphics.rectangle(getCurrentAction() == "hpf" and selected and "fill" or "line", x + 70, y + 185, width - 70, 6)
     local x_diff = (width - 70) * track.track:getFilter().highgain + 70
     love.graphics.rectangle("fill", x + x_diff, y + 180, 6, 16)
 
