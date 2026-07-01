@@ -25,6 +25,8 @@ local programs = {
 local tracks_index = 1
 local file_menu_index = 1
 
+local is_autoplay = false
+
 local track_bpms = {}
 local track_beat_starts = {}
 
@@ -63,9 +65,9 @@ local default_filter = {
     lowgain = 1.0
 }
 
--- function love.gamepadpressed(joystick, button)
-    -- latest_print = tostring(button)
--- end
+function love.gamepadpressed(joystick, button)
+    latest_print = tostring(button)
+end
 
 function love.load()
     local joysticks = love.joystick.getJoysticks()
@@ -105,6 +107,47 @@ function love.update(dt)
     end
 
     is_key_up = true
+
+    if isKeyDown("tab", "start") then
+        time_since_last_input = 0
+
+        is_autoplay = not is_autoplay
+
+        if is_autoplay and right_track then
+            right_track.track:stop()
+            volume_bias = 0.0
+            updateVolumes()
+        end
+    end
+
+    if is_autoplay then
+        if #tracks == 0 then
+            is_debouncing = not is_key_up
+            return
+        end
+
+        if not left_track or not left_track.track:isPlaying() then
+            local curr_name = left_track and left_track.name or ""
+            local name = curr_name
+
+            if #tracks > 1 or not left_track then
+                while name == curr_name do
+                    name = tracks[love.math.random(#tracks)][1]
+                end
+            end
+
+            local track = getTrack(name, "tracks/"..name)
+            if left_track then
+                left_track.track:stop()
+                left_track.track:release()
+            end
+            left_track = track
+            left_track.track:play()
+        end
+
+        is_debouncing = not is_key_up
+        return
+    end
 
     if isKeyDown("left", "dpleft") then
         time_since_last_input = 0
@@ -481,7 +524,7 @@ function love.draw()
                 name = string.format("%s - %.2f BPM", name, bpm)
             end
             love.graphics.print(name, 5, y)
-            if inFiles() and i == tracks_index then
+            if inFiles() and i == tracks_index and not is_autoplay then
                 love.graphics.rectangle("fill", 0, y, 4, 15)
             end
         end
@@ -489,6 +532,14 @@ function love.draw()
     if #list > 9 and #list > tracks_index then
         y = y + 15
         love.graphics.print("(more)", 5, y)
+    end
+
+    if is_autoplay then
+        love.graphics.rectangle("line", 280, 220, 80, 40)
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.rectangle("fill", 282, 222, 76, 36)
+        love.graphics.setColor(255, 255, 255)
+        love.graphics.print("auto-play", 292, 232)
     end
 end
 
@@ -601,6 +652,10 @@ function drawButton(text, x, y, w, h, selected)
 end
 
 function getCurrentAction()
+    if is_autoplay then
+        return ""
+    end
+
     return actions[action_y][action_x]
 end
 
