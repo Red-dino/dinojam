@@ -65,9 +65,9 @@ local default_filter = {
     lowgain = 1.0
 }
 
-function love.gamepadpressed(joystick, button)
-    latest_print = tostring(button)
-end
+-- function love.gamepadpressed(joystick, button)
+    -- latest_print = tostring(button)
+-- end
 
 function love.load()
     local joysticks = love.joystick.getJoysticks()
