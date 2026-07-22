@@ -4,6 +4,8 @@ DJ app for muos.dev handheld firmware written using Lua and LÖVE. It includes a
 
 Last tested on 
 
+![Picture of app in action on device](examples/dinojam.png)
+
 ## Installation and file management
 
 After downloading this repo to your computer, copy `DinoJam.sh` and the `.dinojam` directory to the `MUOS/applications` directory on your MuOS SD card. Eject the card from your computer, reinsert the SD card into your device, power on, and look for the DinoJam application in the `Application` menu.
@@ -31,6 +33,9 @@ The app can also be used on desktop with LÖVE installed by running `love .dinoj
 I have trouble tapping BPMs because I'm rhymically challenged, which leads to poorly synced mixes. If you're like me, you can edit the BPMs directly in `.dinojam/conf/love/dinojam/tracks.txt`. You must run the app and tap in a BPM for a song for it to appear in this file. The first value in each row is the name, then the BPM, then the time in seconds of a beat. I used the free VirtualDJ desktop software to collect this information for songs.
 
 ## Usage
+
+
+![Screenshot of UI](examples/program.png)
 
 ### General navigation
 
