@@ -1,36 +1,36 @@
 # DinoJam
 
-DJ app for muos.dev handheld firmware written using Lua and LÖVE. It includes a two channel mixer, a crossfader, BPM tapping/syncing, autoplay shuffle, and image/video/custom program support.
+DJ app for [MustardOS](muos.dev) handheld firmware, written using Lua and LÖVE. It includes a two channel mixer, a crossfader, BPM tapping/syncing, autoplay shuffle, and image/video/custom program support.
 
-Last tested on 
+Tested on Mustard OS version `2601.1 Funky Jacaranda` and an Anbernic RG35XX SP.
 
 ![Picture of app in action on device](examples/dinojam.png)
 
 ## Installation and file management
 
-After downloading this repo to your computer, copy `DinoJam.sh` and the `.dinojam` directory to the `MUOS/applications` directory on your MuOS SD card. Eject the card from your computer, reinsert the SD card into your device, power on, and look for the DinoJam application in the `Application` menu.
+After downloading this repo to your computer, copy `DinoJam.sh` and the `.dinojam` directory to the `MUOS/application` directory on your MuOS SD card. Eject the card from your computer, reinsert the SD card into your device, power on, and look for the DinoJam application in the `Application` menu.
 
 ### Adding music/visuals
 
 The app only includes a 120 BPM click track and an ASCII art png to start. 
 
-To add tracks, drop them in the `.dinojam/dinojam/tracks/` directory. Supported formats: mp3, ogg, oga, ogv, wav, flac.
+To add tracks, drop them in the `dinojam/tracks/` directory. Supported formats: mp3, ogg, oga, ogv, wav, flac.
 
-To add visuals, drop them in the `.dinojam/dinojam/visuals/` directory. Supported formats: ogv, png, jpg, jpeg, bmp, tga, hdr, pic, exr.
+To add visuals, drop them in the `dinojam/visuals/` directory. Supported formats: ogv, png, jpg, jpeg, bmp, tga, hdr, pic, exr.
 
 Note that I have not personally tested all file formats, support is based on LÖVE's theoretical support for formats.
 
 ### Adding programs
 
-Programs written in Lua can be added to `.dinojam/dinojam/main.lua`. Program are parameterless functions that can draw directly to the screen using the `love.graphics` API. The active program function is called once per frame. The program has its own canvas, so the canvas can be cleared/uncleared depending on the desired effect. Programs need to be named in the top-level `programs` variable, and then that name linked to the program function in the if-else block starting with `if program_name == "wave"`.
+Programs written in Lua can be added to `dinojam/main.lua`. Program are parameterless functions that can draw directly to the screen using the `love.graphics` API. The active program function is called once per frame. The program has its own canvas, so the canvas can be cleared/uncleared depending on the desired effect. Programs need to be named in the top-level `programs` variable, and then that name linked to the program function in the if-else block starting with `if program_name == "wave"`.
 
 ### Desktop
 
-The app can also be used on desktop with LÖVE installed by running `love .dinojam/dinojam` in the root directory of the repository. On desktop, there's a one-to-one mapping of gamepad keys to keyboard keys. I include the keyboard keys in parentheses next to the gamepad keys throughout the rest of this readme.
+The app can also be used on desktop with LÖVE installed by running `love dinojam` in the root directory of the repository. On desktop, there's a one-to-one mapping of gamepad keys to keyboard keys. I include the keyboard keys in parentheses next to the gamepad keys throughout the rest of this readme.
 
 ### Updating song BPMs manually
 
-I have trouble tapping BPMs because I'm rhymically challenged, which leads to poorly synced mixes. If you're like me, you can edit the BPMs directly in `.dinojam/conf/love/dinojam/tracks.txt`. You must run the app and tap in a BPM for a song for it to appear in this file. The first value in each row is the name, then the BPM, then the time in seconds of a beat. I used the free VirtualDJ desktop software to collect this information for songs.
+I have trouble tapping BPMs because I'm rhymically challenged, which leads to poorly synced mixes. If you're like me, you can edit the BPMs directly in `data/love/dinojam/tracks.txt`. You must run the app and tap in a BPM for a song for it to appear in this file. The first value in each row is the name, then the BPM, then the time in seconds of a beat. I used the free VirtualDJ desktop software to collect this information for songs.
 
 ## Usage
 
@@ -103,4 +103,4 @@ I'm happy to review and support pull requests that improve the app! This include
 
 ## Support
 
-If you want to support me, you can subscribe to my YouTube at youtube.com/@smalldosestudios or check out my other creations at smalldose.net. Thank you! :)
+If you want to support me, follow me on [YouTube](youtube.com/@smalldosestudios) and my website [smalldose.net](smalldose.net). Thank you! :)
