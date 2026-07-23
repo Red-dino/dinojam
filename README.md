@@ -8,7 +8,7 @@ Tested on Mustard OS version `2601.1 Funky Jacaranda` and an Anbernic RG35XX SP.
 
 ## Installation and file management
 
-After downloading this repo to your computer, copy `DinoJam.sh` and the `.dinojam` directory to the `MUOS/application` directory on your MuOS SD card. Eject the card from your computer, reinsert the SD card into your device, power on, and look for the DinoJam application in the `Application` menu.
+You can find and download the latest release, along with installation instructions [here](https://github.com/Red-dino/dinojam/releases/tag/release).
 
 ### Adding music/visuals
 
